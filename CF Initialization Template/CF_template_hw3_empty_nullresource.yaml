@@ -1,0 +1,11 @@
+AWSTemplateFormatVersion: 2010-09-09
+Conditions:
+  Never: !Equals [ a, b ]
+Parameters:
+  myEnvParameterEndpointName:
+    Type: String
+    Default: hw3-sms-spam-classifier-mxnet-endpoint
+Resources:
+  NullResource:
+    Type: Custom::Null
+    Condition: Never

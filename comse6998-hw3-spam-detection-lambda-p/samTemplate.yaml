@@ -1,0 +1,202 @@
+AWSTemplateFormatVersion: 2010-09-09
+Transform: 'AWS::Serverless-2016-10-31'
+Description: 'Assignment 3: Spam Detection 2021-04-05'
+Parameters:
+  myEnvParameterEndpointName:
+    Type: String
+    Default: hw3-sms-spam-classifier-mxnet-endpoint
+Resources:
+  emailBucket:
+    Type: 'AWS::S3::Bucket'
+    Properties:
+      BucketName: hw3-spam-detection-email-s1-cf
+      NotificationConfiguration:
+        LambdaConfigurations:
+          - Event: 's3:ObjectCreated:*'
+            Function: >-
+              arn:aws:lambda:us-east-1:640615917264:function:hw3-spam-detection-LF1-cf
+    DependsOn: spamDetection
+  emailBucketPolicy:
+    Type: 'AWS::S3::BucketPolicy'
+    Properties:
+      Bucket: !Ref emailBucket
+      PolicyDocument:
+        Version: 2012-10-17
+        Statement:
+          - Sid: AllowSESPuts
+            Effect: Allow
+            Principal:
+              Service: ses.amazonaws.com
+            Action: 's3:PutObject'
+            Resource: 'arn:aws:s3:::hw3-spam-detection-email-s1-cf/*'
+            Condition:
+              StringEquals:
+                'aws:Referer': '640615917264'
+  spamDetection:
+    Type: 'AWS::Serverless::Function'
+    Properties:
+      CodeUri: ./hw3-spam-detection-LF1
+      Description: Lambda function spam detection (LF1)
+      Layers:
+        - 'arn:aws:lambda:us-east-1:640615917264:layer:Python_NumPy:4'
+      MemorySize: 128
+      Environment:
+        Variables:
+          REGION: us-east-1
+          myEnvParameterEndpointName:
+            Ref: myEnvParameterEndpointName
+      Handler: lambda_function.lambda_handler
+      Role: 'arn:aws:iam::640615917264:role/service-role/hw3-spam-detection-LF1-cf-role'
+      Timeout: 30
+      Runtime: python3.8
+      FunctionName: hw3-spam-detection-LF1-cf
+  S3InvokeLambdaPermission:
+    Type: 'AWS::Lambda::Permission'
+    Properties:
+      Action: 'lambda:InvokeFunction'
+      FunctionName: hw3-spam-detection-LF1-cf
+      Principal: s3.amazonaws.com
+      SourceArn: 'arn:aws:s3:::hw3-spam-detection-email-s1-cf'
+    DependsOn: spamDetection
+  spamDetectionLambdaRole:
+    Type: 'AWS::IAM::Role'
+    Properties:
+      AssumeRolePolicyDocument:
+        Version: '2012-10-17'
+        Statement:
+          - Effect: Allow
+            Principal:
+              Service: lambda.amazonaws.com
+            Action: sts:AssumeRole
+      Description: IAM role of HW3 for CloudFormation
+      ManagedPolicyArns:
+        - 'arn:aws:iam::aws:policy/AdministratorAccess'
+      Path: /service-role/
+      RoleName: hw3-spam-detection-LF1-cf-role
+  retrainModel:
+    Type: 'AWS::Serverless::Function'
+    Properties:
+      CodeUri: ./hw3-spam-detection-retrain
+      Description: Lambda function retrain model
+      Layers:
+        - 'arn:aws:lambda:us-east-1:640615917264:layer:Python:6'
+        - 'arn:aws:lambda:us-east-1:640615917264:layer:Python_websocket-client:1'
+      MemorySize: 128
+      Environment:
+        Variables:
+          REGION: us-east-1
+      Handler: lambda_function.lambda_handler
+      Role: 'arn:aws:iam::640615917264:role/service-role/hw3-spam-detection-retrain-cf-role'
+      Timeout: 30
+      Runtime: python3.8
+      FunctionName: hw3-spam-detection-retrain-cf
+  retrainModelLambdaRole:
+    Type: 'AWS::IAM::Role'
+    Properties:
+      AssumeRolePolicyDocument:
+        Version: '2012-10-17'
+        Statement:
+          - Effect: Allow
+            Principal:
+              Service: lambda.amazonaws.com
+            Action: sts:AssumeRole
+      Description: IAM role of HW3 for CloudFormation
+      ManagedPolicyArns:
+        - 'arn:aws:iam::aws:policy/AdministratorAccess'
+      Path: /service-role/
+      RoleName: hw3-spam-detection-retrain-cf-role
+  trainingBucket:
+    Type: 'AWS::S3::Bucket'
+    Properties:
+      BucketName: hw3-spam-detection-training-cf
+  sesReceiptRuleSet:
+    Type: AWS::SES::ReceiptRuleSet
+    Properties:
+      RuleSetName: hw3-spam-detection-rule-set-cf
+  sesReceiptRule:
+    Type: 'AWS::SES::ReceiptRule'
+    Properties:
+      Rule:
+        Actions:
+          - S3Action:
+              BucketName: hw3-spam-detection-email-s1-cf
+        Enabled: true
+        Name: hw3-spam-detection-store-email-s3-cf
+        Recipients:
+          - aws@aws.yiwenfang.com
+      RuleSetName: hw3-spam-detection-rule-set-cf
+    DependsOn:
+      - emailBucket
+      - sesReceiptRuleSet
+  CloudWatchScheduledRule:
+    Type: 'AWS::Events::Rule'
+    Properties:
+      Description: CloudWatch Event to trigger lambda function
+      Name: hw3-spam-detection-retrain-cf
+      ScheduleExpression: rate(7 days)
+      State: ENABLED
+      Targets:
+        - Arn: !GetAtt
+            - retrainModel
+            - Arn
+          Id: hw3-spam-detection-retrain-cf
+  PermissionForEventsToInvokeLambda:
+    Type: 'AWS::Lambda::Permission'
+    Properties:
+      Action: 'lambda:InvokeFunction'
+      FunctionName: hw3-spam-detection-retrain-cf
+      Principal: events.amazonaws.com
+      SourceArn: !GetAtt
+        - CloudWatchScheduledRule
+        - Arn
+    DependsOn: retrainModel
+
+  activateSesReceiptRuleSetLambdaFunction:
+    Type: AWS::Lambda::Function
+    Properties:
+      FunctionName: hw3-spam-detection-activate-ses-ReceiptRuleSet-cf
+      Layers:
+        - 'arn:aws:lambda:us-east-1:640615917264:layer:Python_cfnresponse:1'
+      Code:
+        ZipFile: |
+
+          import boto3, json
+          import cfnresponse
+
+          def handler(event, context):
+              print('EVENT:[{}]'.format(event))
+              client = boto3.client('ses')
+              response = client.set_active_receipt_rule_set(RuleSetName='hw3-spam-detection-rule-set-cf')
+              responseValue = 120
+              responseData = {}
+              responseData['Data'] = responseValue
+              cfnresponse.send(event, context, cfnresponse.SUCCESS, responseData)
+
+      Handler: index.handler
+      Role: 'arn:aws:iam::640615917264:role/service-role/hw3-spam-detection-rule-set-cf-role'
+      Runtime: python3.8
+      Timeout: 60
+    DependsOn:
+      - activateSesReceiptRuleSetLambdaFunctionLambdaRole
+      - sesReceiptRuleSet
+  activateSesReceiptRuleSetLambdaFunctionLambdaRole:
+    Type: 'AWS::IAM::Role'
+    Properties:
+      AssumeRolePolicyDocument:
+        Version: '2012-10-17'
+        Statement:
+          - Effect: Allow
+            Principal:
+              Service: lambda.amazonaws.com
+            Action: sts:AssumeRole
+      Description: IAM role of HW3 for CloudFormation
+      ManagedPolicyArns:
+        - 'arn:aws:iam::aws:policy/AdministratorAccess'
+      Path: /service-role/
+      RoleName: hw3-spam-detection-rule-set-cf-role
+  Primerinvoke:
+    Type: AWS::CloudFormation::CustomResource
+    DependsOn: activateSesReceiptRuleSetLambdaFunction
+    Version: "1.0"
+    Properties:
+      ServiceToken: !GetAtt activateSesReceiptRuleSetLambdaFunction.Arn

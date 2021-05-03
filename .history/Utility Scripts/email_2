@@ -1,0 +1,71 @@
+Return-Path: <iphone5a1429@gmail.com>
+Received: from mail-pg1-f182.google.com (mail-pg1-f182.google.com [209.85.215.182])
+ by inbound-smtp.us-east-1.amazonaws.com with SMTP id ae680j7iai029q9hu06uubd44n280okp7osal501
+ for aws@aws.yiwenfang.com;
+ Fri, 26 Mar 2021 06:20:12 +0000 (UTC)
+Received-SPF: pass (spfCheck: domain of _spf.google.com designates 209.85.215.182 as permitted sender) client-ip=209.85.215.182; envelope-from=iphone5a1429@gmail.com; helo=mail-pg1-f182.google.com;
+Authentication-Results: amazonses.com;
+ spf=pass (spfCheck: domain of _spf.google.com designates 209.85.215.182 as permitted sender) client-ip=209.85.215.182; envelope-from=iphone5a1429@gmail.com; helo=mail-pg1-f182.google.com;
+ dkim=pass header.i=@gmail.com;
+ dmarc=pass header.from=gmail.com;
+X-SES-RECEIPT: AEFBQUFBQUFBQUFGcjQ1SG1aWE45V1ZnSmQvZ1BxSUdNdXEyOGM0YXRRVTY2OHNZTU9xckRnbEpSdnBaYTFDSXo4QzR3eTVEQnBLVTU4WVVHZEo1eFlJdUlNMlNQWCsrUXFtUDUvMmF0emN6d0ZtRlVlTXVXblRGWSsvWTl0SG92SVlsa2hadzhaN21BVlRpd1p3bWNuQ1loNDdsRGlyL0dYUnBLbTU0c05PR1Q5OFV5M21TeVpnTVlQczYyckxiZ0dac2RvSzJtVGxHMWEvN2RMTlFVOGRZZndnN0NBSjFwRVBrczQ2QmZZanFUc0VXdk9FamJFK0FPUkt6Y2FJQjFGUzRLMVU0cG11M0VOMTVXYVB2OTg1QkxFQVVlMFZraTY5b09GSWJPUnZGb0pqc1dZWlZ0ejhKQm8zTFRsMzg0ZSt6bjMyQ3RNaXM9
+X-SES-DKIM-SIGNATURE: a=rsa-sha256; q=dns/txt; b=awvFkue6Bg1yQoO4ROHlLEroPg9mS5Kf/j/BXR+adJK44bpzgapDTCW909eVSlln+Drw7xWCL5dxD0/pgmOA0X7B5lQPnaYPaYzBGwhwdQnkX/Y4RM+AlopcJWAizOrV2yyEh9bbanr5mAoKzoD2Be3XzcDfLnlAd5qZjE8EUX8=; c=relaxed/simple; s=ug7nbtf4gccmlpwj322ax3p6ow6yfsug; d=amazonses.com; t=1616739612; v=1; bh=AsV2+H4QHTK2g5haFrR4eNtuMKzFiQSALbHjbz5bYs8=; h=From:To:Cc:Bcc:Subject:Date:Message-ID:MIME-Version:Content-Type:X-SES-RECEIPT;
+Received: by mail-pg1-f182.google.com with SMTP id l1so3920819pgb.5
+        for <aws@aws.yiwenfang.com>; Thu, 25 Mar 2021 23:20:12 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=mime-version:from:date:message-id:subject:to;
+        bh=AsV2+H4QHTK2g5haFrR4eNtuMKzFiQSALbHjbz5bYs8=;
+        b=E0h4QuwntVFbv0S91Aqxd6cpdcX0bdbMfVrXiqmOGyidsBhzl8RFvRAPYUAaa724ep
+         fX2UrOUoL0D/Kje0Y61VdhwWb2KW04fR5tnZk6TsVQ3I5gxykcrJpaeIUi0wFa9ZIqC/
+         DbvDfzoQZqVOOTuGdDy9I10ZLaMT8inAbAqEl7GQo5xig4OuSDbMl/HedLDBMVP93Nkh
+         WVV5gUpzY5B3QpoSZfGcLOZvK2+M//wzMpk3MyF3nQtCSz77XkuBgv8UvgtHwqPuvnS2
+         x65LzkzxbQsjvuN+wufXpzzE56/wm8qIK5xgfO9FLsibIHBQsd92HICe/2wmLeijlLs6
+         TcqQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:from:date:message-id:subject:to;
+        bh=AsV2+H4QHTK2g5haFrR4eNtuMKzFiQSALbHjbz5bYs8=;
+        b=oJ3gq3qjNLOC83qCjeMLNRAILtsNN6xAXDen+JdqcwuD1tNFoJnOlBn+ya14/UfPhQ
+         KFw0MOvctrGR/8xD6ueMTls4MkdRV2pPp4ke01hp8TNhRKtEov5uNLhgjZPh+P5MtgT4
+         z6v2Db745TWncT47unh2eet2jOywc7I1EhMzThFbKUyOMa39j6EGtJ9l8bfwUPMel4BC
+         3NIFVb6c3Ylq9lu2dvAPyBBofV7jNZ/rjMS9sbUUV1nA5YKa6xdAk+Y+CLoehdPPB5Mu
+         tUjfg6YMjIi0MfNQmwxl1svNJG3CTkiIcOlCoUkzrd/wmhO3mD1/6toZZ+Vkyd70Pw+C
+         t5zg==
+X-Gm-Message-State: AOAM533G0vYtDAkEoSwcXjYAjdtBT3yqB/rTuA7Bo4tsJ6hvaZSOgdTK
+	f7fg9gPDV7KLdYr2D3f/MBhpa1yfu4KNdDpg4okI6LOL
+X-Google-Smtp-Source: ABdhPJx1/GFXUF3g3AeODggAdnHKrCk/fWMMqNvOf3bp/aE9Duur4v1SK+JNbUmdy6atajjgTQ1R0exV2SDRVYK5KYo=
+X-Received: by 2002:a62:1c86:0:b029:205:5428:41eb with SMTP id
+ c128-20020a621c860000b0290205542841ebmr11619251pfc.33.1616739611131; Thu, 25
+ Mar 2021 23:20:11 -0700 (PDT)
+MIME-Version: 1.0
+From: iPhone5 A1429 <iphone5a1429@gmail.com>
+Date: Fri, 26 Mar 2021 02:20:00 -0400
+Message-ID: <CACOrNC3Dm8SNiv0d-KnvCJteZf=L9UrTDv6J+vnt+XfE0ENXBA@mail.gmail.com>
+Subject: Test from Google
+To: aws@aws.yiwenfang.com
+Content-Type: multipart/alternative; boundary="00000000000037407905be6a8653"
+
+--00000000000037407905be6a8653
+Content-Type: text/plain; charset="UTF-8"
+
+Dear Sir
+*Test email to you.*
+
+*Different* emails for the link google.com.
+
+Best
+
+*Test Name*
+
+--00000000000037407905be6a8653
+Content-Type: text/html; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
+
+<div dir=3D"ltr">Dear Sir<div><b><font color=3D"#ff0000">Test email to you.=
+</font></b></div><div><font color=3D"#ff0000"><b><br></b></font><div><u><fo=
+nt color=3D"#00ff00">Different</font></u> emails for the link <a href=3D"ht=
+tp://google.com">google.com</a>.</div><div><br></div><div>Best</div><div><b=
+r></div><div><b>Test Name</b></div></div></div>
+
+--00000000000037407905be6a8653--

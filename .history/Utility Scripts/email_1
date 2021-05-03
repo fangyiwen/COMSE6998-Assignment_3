@@ -1,0 +1,31 @@
+Return-Path: <010001786d1d0372-43ac7ad9-7fc1-4be9-95b4-6fb318508949-000000@amazonses.com>
+Received: from a48-95.smtp-out.amazonses.com (a48-95.smtp-out.amazonses.com [54.240.48.95])
+ by inbound-smtp.us-east-1.amazonaws.com with SMTP id fut911m7g0o481bu0lqk190c9eles36qpsirf281
+ for aws@aws.yiwenfang.com;
+ Fri, 26 Mar 2021 05:58:41 +0000 (UTC)
+Received-SPF: pass (spfCheck: domain of amazonses.com designates 54.240.48.95 as permitted sender) client-ip=54.240.48.95; envelope-from=010001786d1d0372-43ac7ad9-7fc1-4be9-95b4-6fb318508949-000000@amazonses.com; helo=a48-95.smtp-out.amazonses.com;
+Authentication-Results: amazonses.com;
+ spf=pass (spfCheck: domain of amazonses.com designates 54.240.48.95 as permitted sender) client-ip=54.240.48.95; envelope-from=010001786d1d0372-43ac7ad9-7fc1-4be9-95b4-6fb318508949-000000@amazonses.com; helo=a48-95.smtp-out.amazonses.com;
+ dkim=pass header.i=@amazonses.com;
+ dmarc=fail header.from=gmail.com;
+X-SES-RECEIPT: AEFBQUFBQUFBQUFGbnY4b0xxc2NsTFNCWEpoTUMvL1N1QkdQaGtjU3lUOXQ0NHA0TGdDcUhxeUJ4RjNFa0dyWFA0aDB2YWF3VE5EZ2hvRERuYm40RTNpQkpsZEJSbWtGSmRmeVorcTc4NmExTk1VdkFNWEVOdk1CTm1nQkpFKzd4TGl0dUtPdndkZ0ZnM3p6KzhRRnhnRnpnOU81U0ZSUS9KM3l5ZFE5VWYySlBqRThkRlY0QndMR05zRklDajMya3VqUDQwVnJuWG9DTFRIVW12ekMrSWkySkxmaXNkd05CN1FKSkFHTG8yZFEyZkJwd1JKenN5TmhHa29PSVBQbHlwWllDUFo4bzN6blFldFFTdzY4NWhDWHZvRjdKQU9zL2JyN1U1LzdLWU1manB1WFBtYS9DbDlQeE1VOWtHZUxsMFltMEdGaWZCWFd2alZZa012M2l4aDFpVDFDOTNGU0NwSnR5VjZrQlN5R2drUEcwSEU2TnNQMmFMdHAyclV4dXhNWW52Q0RmSzk4PQ==
+X-SES-DKIM-SIGNATURE: a=rsa-sha256; q=dns/txt; b=UbZQ044C8JabCfyX92+pQCqntAJHPDn4VVPNI65D6FdgqAcXA1DAgYna9yo2HNpE6qRE/GIdlFu4Uv20WRGsPeJENxgXOAkB9CQA1Tu4g5CidH0kv6CDCNZWuUj7OHJAo4JHt9dycWXLBhhcslmLfg0EaHqS4+udUyddfFBr8T8=; c=relaxed/simple; s=ug7nbtf4gccmlpwj322ax3p6ow6yfsug; d=amazonses.com; t=1616738322; v=1; bh=+vFzjnGocH7vf8fqCQURjSvTnKuYtJ/gwKXaeQFWQ+Y=; h=From:To:Cc:Bcc:Subject:Date:Message-ID:MIME-Version:Content-Type:X-SES-RECEIPT;
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/simple;
+	s=ug7nbtf4gccmlpwj322ax3p6ow6yfsug; d=amazonses.com; t=1616738321;
+	h=From:To:Subject:MIME-Version:Content-Type:Content-Transfer-Encoding:Message-ID:Date:Feedback-ID;
+	bh=+vFzjnGocH7vf8fqCQURjSvTnKuYtJ/gwKXaeQFWQ+Y=;
+	b=FPxPIGdWyPKFVGDekD5yXb2fX3VDUantfq2lYWxLAk+YF0MgRdxCobdu+XbT+438
+	91INsbzX0ZX481nirZ5bOP0XRJlWI4huDK3HK2T2cl1rJchPEjBfeDRIkeESGDHI0PZ
+	DZwA2YSjIUa85nc7zQMsTIxLEKczyKmLA69J6k0U=
+From: iphone5a1429@gmail.com
+To: aws@aws.yiwenfang.com
+Subject: test aws
+MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
+Message-ID: <010001786d1d0372-43ac7ad9-7fc1-4be9-95b4-6fb318508949-000000@email.amazonses.com>
+Date: Fri, 26 Mar 2021 05:58:41 +0000
+X-SES-Outgoing: 2021.03.26-54.240.48.95
+Feedback-ID: 1.us-east-1.6nsVs6oadoWFMx5KMbSjs+BCfn1ZvEiFPoItEJ3s2Bk=:AmazonSES
+
+test aws
